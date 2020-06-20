@@ -1,3 +1,5 @@
+package cz.swdt.blok
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
