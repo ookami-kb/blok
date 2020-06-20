@@ -15,19 +15,35 @@ abstract class Bloc<EVENT, STATE>(scope: CoroutineScope) : Flow<STATE> {
 
     private val eventChannel = Channel<EVENT>()
 
-    suspend fun add(event: EVENT) = eventChannel.send(event)
+    suspend fun add(event: EVENT) {
+        try {
+            doOnEvent(event)
+            eventChannel.send(event)
+        } catch (e: Throwable) {
+            doOnError(e)
+        }
+    }
+
+    private suspend fun doOnEvent(event: EVENT) {
+        BlocSupervisor.delegate?.onEvent(event)
+        onEvent(event)
+    }
 
     private suspend fun doOnTransition(transition: Transition<EVENT, STATE>) {
+        BlocSupervisor.delegate?.onTransition(transition)
         onTransition(transition)
     }
 
     private suspend fun doOnError(error: Throwable) {
+        BlocSupervisor.delegate?.onError(error)
         onError(error)
     }
 
     protected open suspend fun onTransition(transition: Transition<EVENT, STATE>) {}
 
     protected open suspend fun onError(error: Throwable) {}
+
+    protected open suspend fun onEvent(event: EVENT) {}
 
     init {
         eventChannel.consumeAsFlow()
@@ -37,6 +53,7 @@ abstract class Bloc<EVENT, STATE>(scope: CoroutineScope) : Flow<STATE> {
                     .map { Transition(stateFlow.value, event, it) }
             }
             .onEach { transition ->
+                println(transition)
                 if (transition.currentState == transition.nextState) return@onEach
                 try {
                     doOnTransition(transition)
