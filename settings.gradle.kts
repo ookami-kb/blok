@@ -1,3 +1,3 @@
 rootProject.name = "blok"
 
-include(":core")
+include(":core", ":example")

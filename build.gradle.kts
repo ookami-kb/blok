@@ -1,13 +1,24 @@
-plugins {
-    java
-    kotlin("jvm") version "1.3.72"
-}
-
-repositories {
-    mavenCentral()
-}
-
 allprojects {
     group = "com.github.ookami-kb"
     version = "0.1.0"
+
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven(url = "https://jitpack.io")
+    }
+}
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    val kotlinVersion = "1.3.72"
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:3.6.3")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
 }
